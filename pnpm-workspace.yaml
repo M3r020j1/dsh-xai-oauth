@@ -1,0 +1,7 @@
+packages:
+  - .
+
+# The plugin does not execute these transitive optional build scripts.
+allowBuilds:
+  '@google/genai': false
+  protobufjs: false

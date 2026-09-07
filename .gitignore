@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+*.tgz
+*.tar.gz
+
+# Never commit local DSH state or credentials.
+.dsh/
+credentials/
+backups/
+*.pem
+*.key
+.env
+.env.*
+!.env.example

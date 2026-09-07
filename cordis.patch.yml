@@ -1,0 +1,11 @@
+# Keep OAuth storage and refresh inside the DSH credential seam.  The stock
+# llm-pi-ai plugin observes ctx.authorization and registers xAI's catalog flow.
+- insert:
+    - id: authorization
+      name: '@deepseek-ai/dsh-authorization'
+    - id: dsh-xai-oauth
+      name: dsh-xai-oauth
+- id: llm-pi-ai
+  config:
+    providers:
+      xai: {}
