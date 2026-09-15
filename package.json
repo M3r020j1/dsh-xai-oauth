@@ -1,6 +1,6 @@
 {
   "name": "dsh-xai-oauth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Native xAI OAuth bridge for DeepSeek Harness",
   "keywords": [
     "deepseek-harness",
@@ -51,8 +51,9 @@
     "check": "node node_modules/typescript/bin/tsc --noEmit",
     "test": "node node_modules/vitest/vitest.mjs run",
     "test:installer": "bash tests/install-smoke.sh",
+    "check:runtime-package": "node scripts/check-runtime-package.mjs",
     "audit:release": "bash scripts/audit-release.sh",
-    "verify": "pnpm check && pnpm test && pnpm test:installer && pnpm build"
+    "verify": "pnpm check && pnpm test && pnpm test:installer && pnpm build && pnpm check:runtime-package"
   },
   "dsh": {
     "bundle": {
@@ -69,12 +70,12 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-authorization": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-connection": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-ui-settings-models": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-credentials": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-llm-pi-ai": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-authorization": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-client-connection": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-client-ui-settings-models": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-credentials": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-llm-pi-ai": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-settings": ">=0.1.2-rc.1 <0.2.0",
     "@deepseek-ai/schemastery": "^3.18.1"
   },
   "peerDependenciesMeta": {
@@ -89,13 +90,13 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.2",
-    "@deepseek-ai/dsh-authorization": "0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-connection": "0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-ui-settings-models": "0.1.2-rc.1",
-    "@deepseek-ai/dsh-credentials": "0.1.2-rc.1",
-    "@deepseek-ai/dsh-llm-pi-ai": "0.1.2-rc.1",
-    "@deepseek-ai/dsh-settings": "0.1.2-rc.1",
-    "@deepseek-ai/schemastery": "3.18.1",
+    "@deepseek-ai/dsh-authorization": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-connection": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-settings-models": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-credentials": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-llm-pi-ai": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-settings": "0.1.5-rc.2",
+    "@deepseek-ai/schemastery": "3.18.2",
     "@types/node": "^24.10.0",
     "tsdown": "^0.22.14",
     "typescript": "^5.9.3",

@@ -5,7 +5,8 @@ import type { ProviderCardExtrasOwnerProps } from '@deepseek-ai/dsh-client-ui-se
 
 export const inject = ['connection', 'locale', 'slots']
 
-const RPC_CHANNEL = '/dsh-xai-oauth'
+const RPC_CHANNEL = '/api'
+const RPC_METHOD_PREFIX = 'dsh-xai-oauth.'
 const LOCALE_NS = 'dsh-xai-oauth'
 const FAST_POLL_MS = 1_000
 const IDLE_POLL_MS = 15_000
@@ -121,7 +122,11 @@ function safeHttpsUrl(value: string | undefined): string | undefined {
 }
 
 async function rpc<T>(connection: Connection, endpoint: string): Promise<T> {
-  const result = await connection.rpc.call(RPC_CHANNEL, endpoint, {})
+  const result = await connection.rpc.call(
+    RPC_CHANNEL,
+    `${RPC_METHOD_PREFIX}${endpoint}`,
+    {},
+  )
   if (!result.ok) throw new Error(result.error.message || result.error.code)
   return result.value as T
 }

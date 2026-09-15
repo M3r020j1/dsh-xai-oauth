@@ -8,7 +8,7 @@ Requirements:
 
 - Node.js 22.19 or newer;
 - pnpm 11;
-- DeepSeek Harness 0.1.2-rc.1 for integration testing.
+- DeepSeek Harness 0.1.2-rc.1 or 0.1.5-rc.1 for integration testing.
 
 Install dependencies and run the complete verification:
 

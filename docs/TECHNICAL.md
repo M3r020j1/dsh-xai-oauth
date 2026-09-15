@@ -27,8 +27,8 @@ The host plugin injects only public DSH services:
 - `credentials`;
 - `settings`.
 
-It registers one authenticated Connection RPC channel,
-`/dsh-xai-oauth`, with these logical operations:
+It registers one authenticated interceptor on DSH's shared Connection RPC
+channel, `/api`, and owns only methods prefixed with `dsh-xai-oauth.`:
 
 - `status`;
 - `begin`;
@@ -61,9 +61,13 @@ Authorization state is owned by DSH and pi-ai. The plugin keeps only transient
 flow notices in memory. Unloading the plugin cancels any pending authorization
 attempt and withdraws its RPC handler through Cordis effect ownership.
 
+The compiled Host bundle is self-contained. DSH package imports are type-only,
+so an installed release does not depend on a development `node_modules`
+directory beside the plugin.
+
 ## Security invariants
 
-- no raw `webServer` route;
+- no raw `webServer` route or direct dependency on that service;
 - no standalone login page;
 - no token or refresh-token serialization;
 - no credential value in status or error responses;
@@ -81,6 +85,7 @@ The test suite covers:
 - read-only credential behavior;
 - invalid payload handling;
 - Connection-channel registration;
+- self-contained Host packaging without DSH runtime imports;
 - concurrent authorization attempts;
 - prompt cancellation and journal lifecycle.
 

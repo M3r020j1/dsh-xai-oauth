@@ -17,7 +17,7 @@ mkdir -p "$profile_dir"
 printf '%s\n' \
   '#!/usr/bin/env bash' \
   'if [[ "${1:-}" == "--version" ]]; then' \
-  '  echo "0.1.2-rc.1"' \
+  '  echo "0.1.5-rc.1"' \
   '  exit 0' \
   'fi' \
   'if [[ "${1:-}" == "--profile" && "${3:-}" == "--dump-config" ]]; then' \
@@ -50,7 +50,7 @@ node -e '
 ' "$profile_dir/package.json"
 node -e '
   const p = require(process.argv[1])
-  if (p.name !== "dsh-xai-oauth" || p.version !== "0.2.0") process.exit(1)
+  if (p.name !== "dsh-xai-oauth" || p.version !== "0.2.1") process.exit(1)
 ' "$dsh_root/local-plugins/dsh-xai-oauth/package.json"
 
 DSH_HOME="$dsh_root" bash "$repo_dir/scripts/uninstall.sh" \

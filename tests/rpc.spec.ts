@@ -151,19 +151,21 @@ describe('xAI OAuth RPC', () => {
     })
   })
 
-  it('registers only the authenticated Connection channel', () => {
-    const handle = vi.fn()
+  it('registers only the authenticated shared Connection channel', () => {
+    const intercept = vi.fn()
     const effect = vi.fn((setup: () => unknown) => setup())
     const { ctx } = fakeContext()
     Object.assign(ctx, {
-      connection: { rpc: { handle } },
+      connection: { rpc: { intercept } },
       effect,
     })
 
     apply(ctx, {})
 
-    expect(handle).toHaveBeenCalledOnce()
-    expect(handle.mock.calls[0]?.[0]).toBe('/dsh-xai-oauth')
+    expect(intercept).toHaveBeenCalledOnce()
+    expect(intercept.mock.calls[0]?.[0]).toBe('/api')
+    expect(intercept.mock.calls[0]?.[1]('dsh-xai-oauth.status')).toBe(true)
+    expect(intercept.mock.calls[0]?.[1]('another-plugin.status')).toBe(false)
     expect((ctx as unknown as { webServer?: unknown }).webServer).toBeUndefined()
   })
 })

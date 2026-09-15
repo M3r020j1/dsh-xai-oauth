@@ -1,5 +1,5 @@
 import type { Context } from '@deepseek-ai/cordis'
-import { credentialKey, credentialRef, isCredentialRefName } from '@deepseek-ai/dsh-credentials'
+import type { CredentialKey, CredentialRef } from '@deepseek-ai/dsh-credentials'
 import type {
   ConnectionRpcHandler,
   ConnectionRpcResult,
@@ -10,9 +10,11 @@ import type {} from '@deepseek-ai/dsh-authorization'
 import type {} from '@deepseek-ai/dsh-client-connection'
 import type {} from '@deepseek-ai/dsh-settings'
 
-const RPC_CHANNEL = '/dsh-xai-oauth'
-const XAI_CREDENTIAL_KEY = credentialKey('llm-pi-ai', 'xai')
-const XAI_API_KEY_REF = credentialRef('XAI_API_KEY')
+const RPC_CHANNEL = '/api'
+const RPC_METHOD_PREFIX = 'dsh-xai-oauth.'
+const CREDENTIAL_REF_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/
+const XAI_CREDENTIAL_KEY = 'llm-pi-ai/xai' as CredentialKey
+const XAI_API_KEY_REF = 'XAI_API_KEY' as CredentialRef
 
 export const name = 'dsh-xai-oauth'
 export const inject = ['authorization', 'connection', 'credentials', 'settings']
@@ -45,6 +47,17 @@ type PiAiSettings = {
       apiKeyEnv?: unknown
     }
   }
+}
+
+function isCredentialRefName(value: string): boolean {
+  return CREDENTIAL_REF_PATTERN.test(value)
+}
+
+function credentialRef(value: string): CredentialRef {
+  if (!isCredentialRefName(value)) {
+    throw new TypeError(`credential ref "${value}" must be a POSIX shell identifier`)
+  }
+  return value as CredentialRef
 }
 
 class PublicError extends Error {
@@ -238,7 +251,16 @@ export function createXaiOAuthRpcHandler(
  */
 export function apply(ctx: Context, _config: Config): void {
   const journal = new AuthorizationJournal()
-  ctx.connection.rpc.handle(RPC_CHANNEL, createXaiOAuthRpcHandler(ctx, journal))
+  const handler = createXaiOAuthRpcHandler(ctx, journal)
+  ctx.connection.rpc.intercept(
+    RPC_CHANNEL,
+    endpoint => endpoint.startsWith(RPC_METHOD_PREFIX),
+    (endpoint, payload, signal) => handler(
+      endpoint.slice(RPC_METHOD_PREFIX.length),
+      payload,
+      signal,
+    ),
+  )
   ctx.effect(() => () => {
     journal.cancel()
     ctx.authorization.cancel(XAI_CREDENTIAL_KEY)

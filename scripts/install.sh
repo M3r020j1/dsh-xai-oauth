@@ -2,8 +2,8 @@
 set -euo pipefail
 
 plugin_name="dsh-xai-oauth"
-plugin_version="0.2.0"
-tested_dsh_version="0.1.2-rc.1"
+plugin_version="0.2.1"
+tested_dsh_versions=("0.1.2-rc.1" "0.1.5-rc.1")
 profile_name="web"
 source_path=""
 dsh_bin="${DSH_BIN:-}"
@@ -104,8 +104,15 @@ if [[ ! -f "$profile_dir/package.json" ]]; then
 fi
 
 active_dsh_version="$("$dsh_bin" --version | tr -d '[:space:]')"
-if [[ "$active_dsh_version" != "$tested_dsh_version" && "$allow_untested" -ne 1 ]]; then
-  echo "install: DSH $active_dsh_version is not tested; expected $tested_dsh_version" >&2
+version_supported=0
+for tested_dsh_version in "${tested_dsh_versions[@]}"; do
+  if [[ "$active_dsh_version" == "$tested_dsh_version" ]]; then
+    version_supported=1
+    break
+  fi
+done
+if [[ "$version_supported" -ne 1 && "$allow_untested" -ne 1 ]]; then
+  echo "install: DSH $active_dsh_version is not tested; expected one of: ${tested_dsh_versions[*]}" >&2
   echo "Use --allow-untested-dsh only after compatibility testing." >&2
   exit 1
 fi
