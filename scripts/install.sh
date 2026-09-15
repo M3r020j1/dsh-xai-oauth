@@ -2,7 +2,7 @@
 set -euo pipefail
 
 plugin_name="dsh-xai-oauth"
-plugin_version="0.2.1"
+plugin_version="0.2.7"
 tested_dsh_versions=("0.1.2-rc.1" "0.1.5-rc.1")
 profile_name="web"
 source_path=""
@@ -234,7 +234,9 @@ node -e '
   fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`)
 ' "$profile_dir/package.json" "$plugin_dir" "$plugin_name"
 
-"$pnpm_bin" --dir "$profile_dir" install --frozen-lockfile=false
+"$pnpm_bin" --dir "$profile_dir" install --force --frozen-lockfile=false
+rm -rf -- "$profile_dir/node_modules/$plugin_name"
+cp -a "$plugin_dir" "$profile_dir/node_modules/$plugin_name"
 "$dsh_bin" --profile "$profile_name" --dump-config >"$stage_dir/composed.yml"
 if ! grep -q "$plugin_name" "$stage_dir/composed.yml"; then
   echo "install: composed profile does not contain $plugin_name" >&2

@@ -1,12 +1,11 @@
 import { createElement as h, useCallback, useEffect, useState } from 'react'
 
-import type { ConnectionRpcResult } from '@deepseek-ai/dsh-client-connection/client'
 import type { ProviderCardExtrasOwnerProps } from '@deepseek-ai/dsh-client-ui-settings-models/client'
 
 export const inject = ['connection', 'locale', 'slots']
 
 const RPC_CHANNEL = '/api'
-const RPC_METHOD_PREFIX = 'dsh-xai-oauth.'
+const RPC_NAMESPACE = 'dshXaiOauth'
 const LOCALE_NS = 'dsh-xai-oauth'
 const FAST_POLL_MS = 1_000
 const IDLE_POLL_MS = 15_000
@@ -37,6 +36,13 @@ type Status = {
 }
 
 type Translate = (key: string) => string
+type ConnectionRpcResult<T> = {
+  ok: true
+  value: T
+} | {
+  ok: false
+  error: { code: string; message: string }
+}
 type Connection = {
   rpc: {
     call(channel: string, endpoint: string, payload: unknown): Promise<ConnectionRpcResult<unknown>>
@@ -124,8 +130,8 @@ function safeHttpsUrl(value: string | undefined): string | undefined {
 async function rpc<T>(connection: Connection, endpoint: string): Promise<T> {
   const result = await connection.rpc.call(
     RPC_CHANNEL,
-    `${RPC_METHOD_PREFIX}${endpoint}`,
-    {},
+    `${RPC_NAMESPACE}/${endpoint}`,
+    { args: {} },
   )
   if (!result.ok) throw new Error(result.error.message || result.error.code)
   return result.value as T

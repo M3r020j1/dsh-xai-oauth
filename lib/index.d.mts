@@ -1,5 +1,5 @@
+import { TypertRemoteService } from "@deepseek-ai/dsh-typert-protocol";
 import { Context } from "@deepseek-ai/cordis";
-import { ConnectionRpcHandler } from "@deepseek-ai/dsh-client-connection";
 import { AuthorizationNotice, AuthorizationPrompt } from "@deepseek-ai/dsh-authorization";
 //#region src/journal.d.ts
 type PublicPrompt = Omit<AuthorizationPrompt, 'signal'> & {
@@ -51,13 +51,74 @@ interface XaiOAuthStatus {
   };
   attempt: ReturnType<AuthorizationJournal['snapshot']>;
 }
-declare function createXaiOAuthRpcHandler(ctx: Context, journal?: AuthorizationJournal): ConnectionRpcHandler;
-/**
- * Mount xAI OAuth as an authenticated DSH Connection channel. The Connection
- * service owns browser-session authentication plus Host/Origin/Fetch-Metadata
- * checks and scopes the route disposer to this plugin's Cordis fiber.
- */
-declare function apply(ctx: Context, _config: Config): void;
+declare class XaiOAuthService extends TypertRemoteService {
+  static inject: readonly ["authorization", "connection", "credentials", "settings", "webServer"];
+  private readonly journal;
+  constructor(ctx: Context);
+  status(): Promise<XaiOAuthStatus>;
+  begin(): Promise<{
+    accepted: true;
+  }>;
+  cancel(): Promise<{
+    cancelled: true;
+  }>;
+  disconnect(): Promise<{
+    disconnected: true;
+  }>;
+  repairOauth(): Promise<{
+    repaired: true;
+  }>;
+}
+/** Keep the historical factory for unit tests of the OAuth business logic. */
+declare function createXaiOAuthRpcHandler(ctx: Context, journal?: AuthorizationJournal): (endpoint: string, payload: unknown, _signal?: AbortSignal) => Promise<{
+  ok: boolean;
+  value: XaiOAuthStatus;
+  error?: undefined;
+} | {
+  ok: boolean;
+  value: {
+    accepted: boolean;
+    cancelled?: undefined;
+    disconnected?: undefined;
+    repaired?: undefined;
+  };
+  error?: undefined;
+} | {
+  ok: boolean;
+  value: {
+    cancelled: boolean;
+    accepted?: undefined;
+    disconnected?: undefined;
+    repaired?: undefined;
+  };
+  error?: undefined;
+} | {
+  ok: boolean;
+  value: {
+    disconnected: boolean;
+    accepted?: undefined;
+    cancelled?: undefined;
+    repaired?: undefined;
+  };
+  error?: undefined;
+} | {
+  ok: boolean;
+  value: {
+    repaired: boolean;
+    accepted?: undefined;
+    cancelled?: undefined;
+    disconnected?: undefined;
+  };
+  error?: undefined;
+} | {
+  ok: boolean;
+  error: {
+    details: {};
+    code: string;
+    message: string;
+  };
+  value?: undefined;
+}>;
 //#endregion
-export { Config, XaiOAuthStatus, apply, createXaiOAuthRpcHandler, inject, name };
+export { Config, XaiOAuthService, XaiOAuthService as default, XaiOAuthStatus, createXaiOAuthRpcHandler, inject, name };
 //# sourceMappingURL=index.d.mts.map

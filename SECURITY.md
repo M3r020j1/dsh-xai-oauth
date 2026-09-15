@@ -18,7 +18,7 @@ reproduction, and redacted logs.
 
 - OAuth grants remain in the DSH credential store.
 - Tokens and refresh tokens are never returned to the browser UI.
-- Browser actions use DSH's authenticated Connection RPC boundary.
+- Browser actions use DSH's authenticated `/api` Typert Remote boundary.
 - DSH enforces its session-cookie, Host, Origin, and cross-site request checks.
 - Authorization notices are held in memory and are not written by this plugin.
 - The plugin exposes no standalone HTTP page or unauthenticated mutation route.

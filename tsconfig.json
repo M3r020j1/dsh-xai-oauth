@@ -8,7 +8,11 @@
     "declarationMap": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "useDefineForClassFields": false
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ]
 }

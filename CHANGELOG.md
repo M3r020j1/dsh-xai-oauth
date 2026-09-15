@@ -2,6 +2,29 @@
 
 All notable changes to this project are documented here.
 
+## 0.2.7 - 2026-09-15
+
+- Declare the Connection and Web server dependencies required by DSH's Typert
+  Remote gateway, restoring full Web-profile startup on DSH 0.1.5.
+- Force refresh of the profile's local package link during installation, so an
+  upgrade cannot retain a stale plugin copy in `node_modules`.
+- Replace only the installed plugin mirror after dependency resolution, closing
+  pnpm's remaining directory-link cache path.
+
+## 0.2.3 - 2026-09-15
+
+- Move the OAuth panel onto DSH's native `/api` Typert Remote gateway.
+- Remove the dedicated `/dsh-xai-oauth` HTTP channel that returned HTTP 405
+  under DSH 0.1.5's static router.
+
+## 0.2.2 - 2026-09-15
+
+- Fix the DSH Web Settings regression in 0.2.1: the plugin no longer
+  registers on DSH's reserved shared `/api` gateway.
+- Register the OAuth controls on their own authenticated DSH Connection
+  channel after the Web server is available, preserving native Models,
+  Plugins, and Agent presets routes.
+
 ## 0.2.1 - 2026-09-15
 
 - Restore startup compatibility with DeepSeek Harness 0.1.5 by moving the

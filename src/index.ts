@@ -1,23 +1,18 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { CredentialKey, CredentialRef } from '@deepseek-ai/dsh-credentials'
-import type {
-  ConnectionRpcHandler,
-  ConnectionRpcResult,
-} from '@deepseek-ai/dsh-client-connection'
+import { TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol'
 import { AuthorizationJournal } from './journal.js'
 
 import type {} from '@deepseek-ai/dsh-authorization'
-import type {} from '@deepseek-ai/dsh-client-connection'
 import type {} from '@deepseek-ai/dsh-settings'
 
-const RPC_CHANNEL = '/api'
-const RPC_METHOD_PREFIX = 'dsh-xai-oauth.'
+const SERVICE_KEY = 'dshXaiOauth'
 const CREDENTIAL_REF_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/
 const XAI_CREDENTIAL_KEY = 'llm-pi-ai/xai' as CredentialKey
 const XAI_API_KEY_REF = 'XAI_API_KEY' as CredentialRef
 
 export const name = 'dsh-xai-oauth'
-export const inject = ['authorization', 'connection', 'credentials', 'settings']
+export const inject = ['authorization', 'connection', 'credentials', 'settings', 'webServer']
 export interface Config {}
 
 export interface XaiOAuthStatus {
@@ -88,21 +83,6 @@ function publicFailure(error: unknown, fallbackCode = 'AUTHORIZATION_FAILED'): {
       ? error
       : code
   return { code, message }
-}
-
-function ok<T>(value: T): ConnectionRpcResult<T> {
-  return { ok: true, value }
-}
-
-function failed(error: unknown, fallbackCode?: string): ConnectionRpcResult<never> {
-  const failure = publicFailure(error, fallbackCode)
-  return {
-    ok: false,
-    error: {
-      ...failure,
-      details: {},
-    },
-  }
 }
 
 function requireEmptyPayload(payload: unknown): void {
@@ -196,26 +176,94 @@ function startAuthorization(ctx: Context, journal: AuthorizationJournal): void {
   )
 }
 
+export class XaiOAuthService extends TypertRemoteService {
+  static inject = ['authorization', 'connection', 'credentials', 'settings', 'webServer'] as const
+
+  private readonly journal = new AuthorizationJournal()
+
+  constructor(ctx: Context) {
+    super(ctx, SERVICE_KEY)
+    this.ctx.effect(() => () => {
+      this.journal.cancel()
+      this.ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
+    }, 'dsh-xai-oauth: cancel authorization on unload')
+  }
+
+  async status(): Promise<XaiOAuthStatus> {
+    return statusPayload(this.ctx, this.journal)
+  }
+
+  async begin(): Promise<{ accepted: true }> {
+    startAuthorization(this.ctx, this.journal)
+    return { accepted: true }
+  }
+
+  async cancel(): Promise<{ cancelled: true }> {
+    this.journal.cancel()
+    this.ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
+    return { cancelled: true }
+  }
+
+  async disconnect(): Promise<{ disconnected: true }> {
+    const record = await this.ctx.credentials.describeRecord(XAI_CREDENTIAL_KEY)
+    this.journal.cancel()
+    this.ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
+    if (record.configured && !record.writable) {
+      throw new PublicError('CREDENTIALS_READ_ONLY', 'The xAI OAuth credential is read-only')
+    }
+    if (record.configured) await this.ctx.credentials.deleteRecord(XAI_CREDENTIAL_KEY)
+    this.journal.reset()
+    return { disconnected: true }
+  }
+
+  async repairOauth(): Promise<{ repaired: true }> {
+    await removeApiKeyOverride(this.ctx)
+    return { repaired: true }
+  }
+}
+
+export default XaiOAuthService
+
+const REMOTE_METHOD_DESCRIPTOR = '@deepseek-ai/dsh-typert-protocol/remote-methods'
+
+function markRemoteMethods(serviceClass: typeof XaiOAuthService): void {
+  const prototype = serviceClass.prototype as object
+  const methods = Object.freeze([
+    Object.freeze({ method: 'status', invocation: Object.freeze({ kind: 'direct' as const }) }),
+    Object.freeze({ method: 'begin', invocation: Object.freeze({ kind: 'direct' as const }) }),
+    Object.freeze({ method: 'cancel', invocation: Object.freeze({ kind: 'direct' as const }) }),
+    Object.freeze({ method: 'disconnect', invocation: Object.freeze({ kind: 'direct' as const }) }),
+    Object.freeze({ method: 'repairOauth', exportName: 'repair-oauth', invocation: Object.freeze({ kind: 'direct' as const }) }),
+  ])
+  Object.defineProperty(prototype, REMOTE_METHOD_DESCRIPTOR, {
+    configurable: true,
+    value: Object.freeze({ version: 1, methods }),
+  })
+}
+
+markRemoteMethods(XaiOAuthService)
+
+/** Keep the historical factory for unit tests of the OAuth business logic. */
 export function createXaiOAuthRpcHandler(
   ctx: Context,
   journal = new AuthorizationJournal(),
-): ConnectionRpcHandler {
-  return async (endpoint, payload) => {
+) {
+  return async (endpoint: string, payload: unknown, _signal?: AbortSignal) => {
     try {
       requireEmptyPayload(payload)
 
       switch (endpoint) {
         case 'status':
-          return ok(await statusPayload(ctx, journal))
+          return { ok: true, value: await statusPayload(ctx, journal) }
 
         case 'begin':
           startAuthorization(ctx, journal)
-          return ok({ accepted: true })
+          return { ok: true, value: { accepted: true } }
 
         case 'cancel':
           journal.cancel()
           ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
-          return ok({ cancelled: true })
+          return { ok: true, value: { cancelled: true } }
 
         case 'disconnect': {
           const record = await ctx.credentials.describeRecord(XAI_CREDENTIAL_KEY)
@@ -226,43 +274,25 @@ export function createXaiOAuthRpcHandler(
           }
           if (record.configured) await ctx.credentials.deleteRecord(XAI_CREDENTIAL_KEY)
           journal.reset()
-          return ok({ disconnected: true })
+          return { ok: true, value: { disconnected: true } }
         }
 
         case 'repair-oauth':
           await removeApiKeyOverride(ctx)
-          return ok({ repaired: true })
+          return { ok: true, value: { repaired: true } }
 
         default:
-          return failed(
-            new PublicError('NOT_FOUND', `Unknown xAI OAuth operation: ${endpoint}`),
-          )
+          throw new PublicError('NOT_FOUND', 'Unknown xAI OAuth operation: ' + endpoint)
       }
     } catch (error) {
-      return failed(error)
+      const failure = publicFailure(error)
+      return {
+        ok: false,
+        error: {
+          ...failure,
+          details: {},
+        },
+      }
     }
   }
-}
-
-/**
- * Mount xAI OAuth as an authenticated DSH Connection channel. The Connection
- * service owns browser-session authentication plus Host/Origin/Fetch-Metadata
- * checks and scopes the route disposer to this plugin's Cordis fiber.
- */
-export function apply(ctx: Context, _config: Config): void {
-  const journal = new AuthorizationJournal()
-  const handler = createXaiOAuthRpcHandler(ctx, journal)
-  ctx.connection.rpc.intercept(
-    RPC_CHANNEL,
-    endpoint => endpoint.startsWith(RPC_METHOD_PREFIX),
-    (endpoint, payload, signal) => handler(
-      endpoint.slice(RPC_METHOD_PREFIX.length),
-      payload,
-      signal,
-    ),
-  )
-  ctx.effect(() => () => {
-    journal.cancel()
-    ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
-  }, 'dsh-xai-oauth: cancel authorization on unload')
 }

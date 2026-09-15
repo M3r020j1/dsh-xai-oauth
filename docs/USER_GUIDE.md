@@ -46,7 +46,8 @@ The repair removes only the API-key override and preserves the OAuth grant.
 ### The xAI provider is missing
 
 Confirm that the plugin is listed in the Web profile and restart DSH. Run the
-installer again if necessary; it validates the composed profile.
+installer again if necessary; it validates the composed profile and refreshes
+the local plugin mirror so an older cached copy cannot remain active.
 
 ### OAuth is connected but requests use an API key
 

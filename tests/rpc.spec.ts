@@ -1,6 +1,6 @@
 import type { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { apply, createXaiOAuthRpcHandler } from '../src/index.js'
+import { XaiOAuthService, createXaiOAuthRpcHandler } from '../src/index.js'
 
 type FakeOptions = {
   apiKeyEnv?: string
@@ -151,21 +151,9 @@ describe('xAI OAuth RPC', () => {
     })
   })
 
-  it('registers only the authenticated shared Connection channel', () => {
-    const intercept = vi.fn()
-    const effect = vi.fn((setup: () => unknown) => setup())
-    const { ctx } = fakeContext()
-    Object.assign(ctx, {
-      connection: { rpc: { intercept } },
-      effect,
-    })
-
-    apply(ctx, {})
-
-    expect(intercept).toHaveBeenCalledOnce()
-    expect(intercept.mock.calls[0]?.[0]).toBe('/api')
-    expect(intercept.mock.calls[0]?.[1]('dsh-xai-oauth.status')).toBe(true)
-    expect(intercept.mock.calls[0]?.[1]('another-plugin.status')).toBe(false)
-    expect((ctx as unknown as { webServer?: unknown }).webServer).toBeUndefined()
+  it('exports a Typert Remote OAuth service', async () => {
+    const { XaiOAuthService } = await import('../src/index.js')
+    expect(XaiOAuthService.inject).toEqual(['authorization', 'connection', 'credentials', 'settings', 'webServer'])
+    expect(XaiOAuthService.name).toBe('XaiOAuthService')
   })
 })

@@ -29,8 +29,10 @@ The installer:
 3. installs the plugin under `~/.dsh/local-plugins/dsh-xai-oauth`;
 4. adds the plugin to the selected profile;
 5. installs profile dependencies;
-6. validates the composed DSH configuration;
-7. restores the previous files automatically if a step fails.
+6. force-refreshes the profile's local plugin mirror so upgrades cannot keep a
+   stale `node_modules` copy;
+7. validates the composed DSH configuration;
+8. restores the previous files automatically if a step fails.
 
 To use a profile other than `web`:
 
@@ -88,6 +90,10 @@ replaces only this plugin:
 git pull --ff-only
 bash ./scripts/install.sh
 ```
+
+After an upgrade, confirm the profile loads the expected plugin version before
+restarting DSH for normal use. The installer refreshes the local mirror
+explicitly to avoid a cached older copy.
 
 ## Uninstall
 

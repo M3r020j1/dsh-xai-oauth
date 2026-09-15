@@ -27,14 +27,18 @@ The host plugin injects only public DSH services:
 - `credentials`;
 - `settings`.
 
-It registers one authenticated interceptor on DSH's shared Connection RPC
-channel, `/api`, and owns only methods prefixed with `dsh-xai-oauth.`:
+It registers a Typert Remote service (`dshXaiOauth`) on DSH's native `/api`
+gateway. This preserves Models, Plugins, and Agent presets while exposing:
 
 - `status`;
 - `begin`;
 - `cancel`;
 - `disconnect`;
 - `repair-oauth`.
+
+The Host service also declares `webServer` in its inject list. That dependency
+is required so Typert Remote registration waits until DSH's Web transport is
+ready. The plugin still does not mount a raw `webServer` HTTP route of its own.
 
 Every operation accepts an empty object. `begin` explicitly selects the OAuth
 method. Status responses contain only safe metadata such as connection state,
@@ -67,7 +71,7 @@ directory beside the plugin.
 
 ## Security invariants
 
-- no raw `webServer` route or direct dependency on that service;
+- no raw `webServer` HTTP route owned by this plugin;
 - no standalone login page;
 - no token or refresh-token serialization;
 - no credential value in status or error responses;
@@ -84,7 +88,7 @@ The test suite covers:
 - API-key override repair while preserving the grant;
 - read-only credential behavior;
 - invalid payload handling;
-- Connection-channel registration;
+- Typert Remote service registration and inject ordering;
 - self-contained Host packaging without DSH runtime imports;
 - concurrent authorization attempts;
 - prompt cancellation and journal lifecycle.
