@@ -153,7 +153,7 @@ describe('xAI OAuth RPC', () => {
 
   it('exports a Typert Remote OAuth service', async () => {
     const { XaiOAuthService } = await import('../src/index.js')
-    expect(XaiOAuthService.inject).toEqual(['authorization', 'connection', 'credentials', 'settings', 'webServer'])
+    expect(XaiOAuthService.inject).toEqual(['authorization', 'credentials', 'settings'])
     expect(XaiOAuthService.name).toBe('XaiOAuthService')
   })
 })

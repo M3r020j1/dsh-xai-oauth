@@ -3,7 +3,7 @@
 ## Supported versions
 
 Security fixes are applied to the latest release. Version 0.2.x is currently
-supported with DeepSeek Harness 0.1.2-rc.1 and 0.1.5-rc.1.
+supported with DeepSeek Harness 0.1.2-rc.1, 0.1.5-rc.1, and 0.1.5-rc.2.
 
 ## Reporting a vulnerability
 

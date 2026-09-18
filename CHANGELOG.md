@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented here.
 
+## 0.2.10 - 2026-09-18
+
+- Drop hard Host dependencies on `connection` and `webServer` so headless
+  profiles can activate the xAI OAuth composition without a Web transport.
+- Keep Typert Remote registration for DSH Web profiles that already provide
+  those services through the normal Web stack.
+
+## 0.2.9 - 2026-09-18
+
+- Make the Host `connection` and `webServer` injects optional so the plugin can
+  activate on headless profiles while still waiting for them on DSH Web.
+- Keep the DSH 0.1.5-rc.2 installer guard and local-mirror refresh behavior.
+
+## 0.2.8 - 2026-09-18
+
+- Extend the installer compatibility guard to DeepSeek Harness 0.1.5-rc.2.
+- Keep the validated Typert Remote Host path and local-mirror refresh from
+  0.2.7 unchanged.
+
 ## 0.2.7 - 2026-09-15
 
 - Declare the Connection and Web server dependencies required by DSH's Typert

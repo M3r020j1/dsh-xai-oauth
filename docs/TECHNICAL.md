@@ -23,7 +23,6 @@ the DSH credential record `llm-pi-ai/xai`.
 The host plugin injects only public DSH services:
 
 - `authorization`;
-- `connection`;
 - `credentials`;
 - `settings`.
 
@@ -36,9 +35,11 @@ gateway. This preserves Models, Plugins, and Agent presets while exposing:
 - `disconnect`;
 - `repair-oauth`.
 
-The Host service also declares `webServer` in its inject list. That dependency
-is required so Typert Remote registration waits until DSH's Web transport is
-ready. The plugin still does not mount a raw `webServer` HTTP route of its own.
+The Host service no longer hard-depends on `connection` or `webServer`. On DSH
+Web those services already exist in the stack, so Typert Remote can register
+normally. On headless profiles they are absent, which lets the OAuth
+composition activate without a browser transport. The plugin still does not
+mount a raw `webServer` HTTP route of its own.
 
 Every operation accepts an empty object. `begin` explicitly selects the OAuth
 method. Status responses contain only safe metadata such as connection state,

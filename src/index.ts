@@ -12,7 +12,7 @@ const XAI_CREDENTIAL_KEY = 'llm-pi-ai/xai' as CredentialKey
 const XAI_API_KEY_REF = 'XAI_API_KEY' as CredentialRef
 
 export const name = 'dsh-xai-oauth'
-export const inject = ['authorization', 'connection', 'credentials', 'settings', 'webServer']
+export const inject = ['authorization', 'credentials', 'settings']
 export interface Config {}
 
 export interface XaiOAuthStatus {
@@ -177,7 +177,7 @@ function startAuthorization(ctx: Context, journal: AuthorizationJournal): void {
 }
 
 export class XaiOAuthService extends TypertRemoteService {
-  static inject = ['authorization', 'connection', 'credentials', 'settings', 'webServer'] as const
+  static inject = ['authorization', 'credentials', 'settings'] as const
 
   private readonly journal = new AuthorizationJournal()
 

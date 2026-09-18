@@ -52,7 +52,7 @@ interface XaiOAuthStatus {
   attempt: ReturnType<AuthorizationJournal['snapshot']>;
 }
 declare class XaiOAuthService extends TypertRemoteService {
-  static inject: readonly ["authorization", "connection", "credentials", "settings", "webServer"];
+  static inject: readonly ["authorization", "credentials", "settings"];
   private readonly journal;
   constructor(ctx: Context);
   status(): Promise<XaiOAuthStatus>;

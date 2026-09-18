@@ -50,7 +50,7 @@ node -e '
 ' "$profile_dir/package.json"
 node -e '
   const p = require(process.argv[1])
-  if (p.name !== "dsh-xai-oauth" || p.version !== "0.2.7") process.exit(1)
+  if (p.name !== "dsh-xai-oauth" || p.version !== "0.2.10") process.exit(1)
 ' "$dsh_root/local-plugins/dsh-xai-oauth/package.json"
 
 DSH_HOME="$dsh_root" bash "$repo_dir/scripts/uninstall.sh" \

@@ -2,8 +2,8 @@
 set -euo pipefail
 
 plugin_name="dsh-xai-oauth"
-plugin_version="0.2.7"
-tested_dsh_versions=("0.1.2-rc.1" "0.1.5-rc.1")
+plugin_version="0.2.10"
+tested_dsh_versions=("0.1.2-rc.1" "0.1.5-rc.1" "0.1.5-rc.2")
 profile_name="web"
 source_path=""
 dsh_bin="${DSH_BIN:-}"
