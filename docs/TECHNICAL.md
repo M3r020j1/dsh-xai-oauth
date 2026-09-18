@@ -70,6 +70,11 @@ The compiled Host bundle is self-contained. DSH package imports are type-only,
 so an installed release does not depend on a development `node_modules`
 directory beside the plugin.
 
+The Host may import declared DSH peer packages such as
+`@deepseek-ai/dsh-typert-protocol`. Those peers are supplied by the active DSH
+profile. The release check still rejects undeclared `@deepseek-ai/*` runtime
+imports.
+
 ## Security invariants
 
 - no raw `webServer` HTTP route owned by this plugin;

@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## 0.2.11 - 2026-09-18
+
+- Allow the Host bundle to import declared DSH peer packages such as
+  `@deepseek-ai/dsh-typert-protocol`, which are provided by the DSH profile at
+  runtime.
+- Keep undeclared `@deepseek-ai/*` runtime imports rejected by the package
+  check so accidental coupling still fails CI.
+
 ## 0.2.10 - 2026-09-18
 
 - Drop hard Host dependencies on `connection` and `webServer` so headless
