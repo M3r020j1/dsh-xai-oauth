@@ -1,6 +1,6 @@
 {
   "name": "dsh-xai-oauth",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Native xAI OAuth bridge for DeepSeek Harness",
   "keywords": [
     "deepseek-harness",
@@ -70,13 +70,13 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-authorization": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-client-connection": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-client-ui-settings-models": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-credentials": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-llm-pi-ai": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-settings": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-typert-protocol": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-authorization": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-client-connection": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-client-ui-settings-models": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-credentials": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-llm-pi-ai": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-settings": ">=0.1.2-rc.1 <0.3.0",
+    "@deepseek-ai/dsh-typert-protocol": ">=0.1.2-rc.1 <0.3.0",
     "@deepseek-ai/schemastery": "^3.18.1"
   },
   "peerDependenciesMeta": {

@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 0.2.12 - 2026-10-09
+
+- Widen DSH peer dependency ranges to include the 0.2.x runtime line.
+- Extend the installer compatibility guard to DeepSeek Harness 0.2.0-rc.2.
+
 ## 0.2.11 - 2026-09-18
 
 - Allow the Host bundle to import declared DSH peer packages such as

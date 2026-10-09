@@ -4,7 +4,7 @@
 
 | Component | Supported |
 | --- | --- |
-| DeepSeek Harness | 0.1.2-rc.1, 0.1.5-rc.1, or 0.1.5-rc.2 |
+| DeepSeek Harness | 0.1.2-rc.1 through 0.1.5-rc.3, or 0.2.0-rc.2 |
 | Node.js | 22.19 or newer |
 | Package manager | pnpm 11 |
 | DSH profile | Web |
