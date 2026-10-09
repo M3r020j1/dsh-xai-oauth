@@ -64,11 +64,16 @@ function fakeContext(options: FakeOptions = {}): {
     },
     settings: {
       writable: true,
-      get: vi.fn(() => ({
-        providers: {
-          xai: state.apiKeyEnv === undefined ? {} : { apiKeyEnv: state.apiKeyEnv },
+      describe: vi.fn(() => ([
+        {
+          ns: 'llm-pi-ai',
+          value: {
+            providers: {
+              xai: state.apiKeyEnv === undefined ? {} : { apiKeyEnv: state.apiKeyEnv },
+            },
+          },
         },
-      })),
+      ])),
       mutate,
     },
   } as unknown as Context

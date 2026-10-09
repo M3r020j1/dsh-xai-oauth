@@ -230,7 +230,9 @@ function XaiOAuthCard(props: CardProps): unknown {
 
   const connected = status?.connected === true
   const hasCredential = status?.credentialKind !== undefined
-  const notices = status?.attempt.notices ?? []
+  const notices = connected || status?.attempt.state === 'authorized'
+    ? []
+    : (status?.attempt.notices ?? [])
   const statusLabel = connected
     ? t('connected')
     : running

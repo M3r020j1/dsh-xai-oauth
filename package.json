@@ -1,6 +1,6 @@
 {
   "name": "dsh-xai-oauth",
-  "version": "0.2.12",
+  "version": "0.2.14",
   "description": "Native xAI OAuth bridge for DeepSeek Harness",
   "keywords": [
     "deepseek-harness",

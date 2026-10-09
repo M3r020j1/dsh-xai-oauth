@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## 0.2.14 - 2026-10-09
+
+- Hide the one-time OAuth device code and authorization link after a successful
+  Connect, so the Models card no longer keeps a stale login challenge on screen.
+- Confirmed support matrix for this release: DeepSeek Harness 0.1.2-rc.1 through
+  0.1.5-rc.3, and 0.2.0-rc.2, on Node.js 22.19+ with the existing installer
+  compatibility guard.
+
+## 0.2.13 - 2026-10-09
+
+- Read plugin settings through DSH 0.2 `settings.describe()` while keeping the
+  older `settings.get()` path for 0.1.x profiles.
+- Cancel a stuck in-flight xAI authorization before starting a new Connect
+  attempt, so a failed browser handoff can be retried cleanly.
+
 ## 0.2.12 - 2026-10-09
 
 - Widen DSH peer dependency ranges to include the 0.2.x runtime line.

@@ -85,6 +85,10 @@ export class AuthorizationJournal {
     this.#error = error
     this.#pending = undefined
     this.#prompt = undefined
+    if (state === 'authorized' || state === 'cancelled') {
+      this.#notices = []
+      this.#error = undefined
+    }
   }
 
   snapshot(): PublicAttempt {

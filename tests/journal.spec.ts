@@ -42,4 +42,17 @@ describe('AuthorizationJournal', () => {
 
     expect(() => journal.start()).toThrow('already running')
   })
+
+  it('clears authorization notices once the attempt succeeds', () => {
+    const journal = new AuthorizationJournal()
+    journal.start()
+    journal.notify({ message: 'Open the authorization page', url: 'https://accounts.x.ai', code: 'ABC' })
+    journal.settle('authorized')
+
+    expect(journal.snapshot()).toMatchObject({
+      state: 'authorized',
+      notices: [],
+    })
+    expect(journal.snapshot().error).toBeUndefined()
+  })
 })

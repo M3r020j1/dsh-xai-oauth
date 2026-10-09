@@ -22,7 +22,7 @@ The currently tested combination is:
 | Component | Version |
 | --- | --- |
 | DeepSeek Harness | 0.1.2-rc.1 through 0.1.5-rc.3, and 0.2.0-rc.2 |
-| Plugin | 0.2.12 |
+| Plugin | 0.2.14 |
 | Node.js | 22.19 or newer |
 | pnpm | 11 |
 

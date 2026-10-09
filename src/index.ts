@@ -44,6 +44,16 @@ type PiAiSettings = {
   }
 }
 
+type SettingsReader = {
+  writable: boolean
+  get?: (ns: string) => unknown
+  describe?: (options?: { redactSecrets?: boolean }) => ReadonlyArray<{ ns: string; value: unknown }>
+  mutate: (
+    ns: string,
+    ops: ReadonlyArray<{ op: 'set'; path: readonly string[]; value: unknown } | { op: 'unset'; path: readonly string[] }>,
+  ) => Promise<void>
+}
+
 function isCredentialRefName(value: string): boolean {
   return CREDENTIAL_REF_PATTERN.test(value)
 }
@@ -62,9 +72,24 @@ class PublicError extends Error {
 }
 
 function xaiApiKeyEnv(ctx: Context): string | undefined {
-  const settings = ctx.settings.get('llm-pi-ai') as PiAiSettings | undefined
+  const settings = readPiAiSettings(ctx)
   const value = settings?.providers?.xai?.apiKeyEnv
   return typeof value === 'string' && value.length > 0 ? value : undefined
+}
+
+/** Read one settings section on both DSH 0.1 (get) and DSH 0.2 (describe). */
+function readPiAiSettings(ctx: Context): PiAiSettings | undefined {
+  const settings = ctx.settings as SettingsReader
+  if (typeof settings.get === 'function') {
+    const value = settings.get('llm-pi-ai')
+    return value && typeof value === 'object' ? value as PiAiSettings : undefined
+  }
+  if (typeof settings.describe === 'function') {
+    const row = settings.describe({ redactSecrets: true }).find(entry => entry.ns === 'llm-pi-ai')
+    const value = row?.value
+    return value && typeof value === 'object' ? value as PiAiSettings : undefined
+  }
+  return undefined
 }
 
 function publicFailure(error: unknown, fallbackCode = 'AUTHORIZATION_FAILED'): {
@@ -157,6 +182,10 @@ function startAuthorization(ctx: Context, journal: AuthorizationJournal): void {
   const flow = ctx.authorization.describe(XAI_CREDENTIAL_KEY)
   if (flow === undefined || !flow.methods.some(method => method.id === 'oauth')) {
     throw new PublicError('OAUTH_UNAVAILABLE', 'The xAI OAuth flow is not available')
+  }
+
+  if (flow.inFlight) {
+    ctx.authorization.cancel(XAI_CREDENTIAL_KEY)
   }
 
   journal.start()
